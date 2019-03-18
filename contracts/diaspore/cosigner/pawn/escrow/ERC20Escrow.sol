@@ -7,7 +7,7 @@ import "./../../../interfaces/ILoanManager.sol";
 import "./../interfaces/IEscrow.sol";
 import "./../interfaces/IPawnManager.sol";
 import "./../interfaces/IBundle.sol";
-import "./../interfaces/IPoach.sol";
+import "./../interfaces/IPouch.sol";
 
 import "./../../../../utils/BytesUtils.sol";
 import "./../../../../utils/SafeMath.sol";
@@ -20,12 +20,12 @@ contract ERC20Escrow is IEscrow, BytesUtils {
 
     IPawnManager pawnManager;
     IBundle public bundle;
-    IPoach public poach;
+    IPouch public pouch;
 
     mapping(uint256 => Config) public configs; // pawnId to config of escrow
 
     struct Config {
-        RateOracle oracle; // Convert the currency of loan to currency of poach and vice versa
+        RateOracle oracle; // Convert the currency of loan to currency of pouch and vice versa
         uint256 liquidationRatio; // Ratio at which a the escrow can liquidate the asset
     }
 
@@ -63,8 +63,8 @@ contract ERC20Escrow is IEscrow, BytesUtils {
         ( , , , , uint256 _packageId) = pawnManager.getPawn(_pawnId);
 
         (IERC721Base erc721, uint256 pairId) = bundle.aContent(_packageId, 0);
-        require(IPoach(address(erc721)) == poach, "The ERC721 its not the IPoach");
-        ( , uint256 pairBalance) = poach.getPair(pairId);
+        require(IPouch(address(erc721)) == pouch, "The ERC721 its not the IPouch");
+        ( , uint256 pairBalance) = pouch.getPair(pairId);
 
         uint256 closingObligation = ILoanManager(_loanManager).getClosingObligation(_loanId);
         uint256 needAmount = _tokenNeedToLiquidation(closingObligation, config.liquidationRatio, config.oracle, _oracleData);
